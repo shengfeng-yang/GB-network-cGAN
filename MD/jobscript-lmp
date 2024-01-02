@@ -1,0 +1,33 @@
+#!/bin/bash -l
+
+# indicate the name of the job
+#SBATCH --job-name=lammps_test
+# indicate how long you need to run
+#SBATCH --time=01:00:00
+# indicate how many nodes you need (each node has 48 CPUs)
+#SBATCH --nodes=1
+# use "general" or "debug" partition
+#SBATCH --partition=general
+
+# send job status to your email
+#SBATCH --mail-type=ALL
+#SBATCH --mail-user=yw132@iu.edu
+
+# typically you don't need change the folloing part
+
+# indicate you will use all the CPUs in the node
+#SBATCH --ntasks-per-node=48
+export OMP_NUM_THREADS=1
+
+module unload PrgEnv-intel/6.0.6
+module load PrgEnv-gnu/6.0.6
+module load openmpi/gnu/4.0.2
+# module load lammps/gnu/7Aug19
+
+nrank=`echo $SLURM_JOB_NUM_NODES \* $SLURM_CPUS_ON_NODE |bc`
+export PATH=/N/u/yw132/BigRed3/lammps-3Mar20/src:$PATH
+
+srun -n $nrank  lmp_mpi < in.lmp
+# srun -n $nrank  lmp_mpi < in2.lmp
+# srun -n $nrank  lmp_mpi < in3.lmp
+# srun -n $nrank  lmp_mpi < in4.lmp
